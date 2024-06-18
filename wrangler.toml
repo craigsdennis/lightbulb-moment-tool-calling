@@ -4,6 +4,12 @@ main = "src/index.ts"
 compatibility_date = "2024-06-14"
 compatibility_flags = ["nodejs_compat"]
 
+assets = "public"
+
+[vars]
+GOVEE_DEVICE_ID = "AC:C0:CB:32:37:36:7A:6D"
+GOVEE_MODEL_ID = "H6052"
+
 # Automatically place your workloads in an optimal location to minimize latency.
 # If you are running back-end logic in a Worker, running it closer to your back-end infrastructure
 # rather than the end user may result in better performance.
@@ -21,8 +27,8 @@ compatibility_flags = ["nodejs_compat"]
 
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#workers-ai
-# [ai]
-# binding = "AI"
+[ai]
+binding = "AI"
 
 # Bind an Analytics Engine dataset. Use Analytics Engine to write analytics within your Pages Function.
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#analytics-engine-datasets
