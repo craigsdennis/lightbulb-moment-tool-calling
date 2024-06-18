@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { assert } from 'vitest';
 
 type Env = {
 	GOVEE_DEVICE_ID: string;
@@ -100,7 +99,7 @@ app.post('/chat', async (c) => {
 					}
 					break;
 				default:
-					messages.push({ role: 'tool', name: tool_call.name, content: `Tool not found: ${tool_call.name}` });
+					messages.push({ role: 'tool', name: tool_call.name, content: `ERROR: Tool not found "${tool_call.name}"` });
 					break;
 			}
 		}
