@@ -3,10 +3,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('send-button');
     const chatMessages = document.getElementById('chat-messages');
     const clearButton = document.getElementById('clear-button');
-    const messages = JSON.parse(localStorage.getItem('messages')) || [];
+    const debugCheckbox = document.getElementById('debug-checkbox');
 
+	function getMessages() {
+		return JSON.parse(localStorage.getItem('messages')) || [];
+	}
+
+	function setMessages(messages) {
+		localStorage.setItem('messages', JSON.stringify(messages));
+		return true
+	}
+	const messages = getMessages();
     // Load messages from LocalStorage
-    messages.forEach(appendMessage);
+    messages.forEach(appendUiMessage);
 
     sendButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', (e) => {
@@ -24,9 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 role: 'user',
                 content: messageText
             };
+			const messages = getMessages();
             messages.push(message);
-            localStorage.setItem('messages', JSON.stringify(messages));
-            appendMessage(message);
+			setMessages(messages);
+			appendUiMessage(message);
             messageInput.value = '';
 
             // Send message to server
@@ -38,13 +48,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ messages })
             }).then(response => response.json())
               .then(data => {
-                  const assistantMessage = {
-                      role: 'assistant',
-                      content: data.response
-                  };
-                  messages.push(assistantMessage);
-                  localStorage.setItem('messages', JSON.stringify(messages));
-                  appendMessage(assistantMessage);
+                  // Update local messages array with response from server
+				  const messages = data.messages;
+				  console.log({messages});
+				  setMessages(messages);
+                  // Clear current messages
+                  chatMessages.innerHTML = '';
+                  // Append all messages
+                  messages.forEach(msg => {
+                      appendUiMessage(msg);
+                  });
               })
               .catch(error => {
                   console.error('Error:', error);
@@ -52,13 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function appendMessage(message) {
+    function appendUiMessage(message) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message');
         if (message.role === 'user') {
             messageElement.classList.add('user');
         } else if (message.role === 'assistant') {
             messageElement.classList.add('assistant');
+        } else if (message.role === 'tool') {
+            if (!debugCheckbox.checked) return;  // Only show tool messages if debug mode is enabled
+            messageElement.classList.add('tool');
         }
         messageElement.textContent = message.content;
         chatMessages.appendChild(messageElement);

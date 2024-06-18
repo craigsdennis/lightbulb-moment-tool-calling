@@ -21,7 +21,17 @@ body {
     border-bottom: 1px solid #333;
 }
 
+.chat-header div {
+    display: flex;
+    align-items: center;
+}
+
+.chat-header label {
+    margin-right: 5px;
+}
+
 .chat-header button {
+    margin-left: 10px;
     padding: 5px 10px;
     border: none;
     background-color: #ff6347;
@@ -84,5 +94,11 @@ body {
 .message.assistant {
     align-self: flex-start;
     background-color: #4caf50;
+    color: #ffffff;
+}
+
+.message.tool {
+    align-self: center;
+    background-color: #ff9800;
     color: #ffffff;
 }

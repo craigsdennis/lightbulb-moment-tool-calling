@@ -43,6 +43,7 @@ app.post('/api/light', async (c) => {
 app.post('/chat', async (c) => {
 	const payload = await c.req.json();
 	const messages = payload.messages || [];
+	console.log({submittedMessages: messages});
 	messages.unshift({
 		role: "system",
 		content: `You are a Home Automation assistant named Homie.
@@ -94,12 +95,19 @@ app.post('/chat', async (c) => {
 					}
 					break;
 				default:
-					console.warn(`Tool not found: ${tool_call.name}`);
+					messages.push({role: "tool", name: tool_call.name, content: `Tool not found: ${tool_call.name}`});
 					break;
 			}
 		}
 	}
-	return c.json(result);
+	const finalMessage = messages[messages.length - 1];
+	console.log({finalMessage});
+	if (finalMessage.role !== "assistant") {
+		messages.push({role: "assistant", content: result.response});
+	}
+	// Remove the system message
+	messages.splice(0, 1);
+	return c.json({messages});
 });
 
 export default app;
