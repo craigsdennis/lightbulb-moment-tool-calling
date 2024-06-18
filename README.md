@@ -4,7 +4,6 @@ This is a [Workers AI](https://developers.cloudflare.com/workers-ai/) applicatio
 
 It adds the ability to control a [Govee](https://us.govee.com/) light device through English controls by making use of a Large Language Model.
 
-https://youtu.be/Id5oKCa__IA
 [<img src="https://img.youtube.com/vi/Id5oKCa__IA/0.jpg">](https://youtu.be/Id5oKCa__IA "Lightbulb Moment Tool/Function Calling - YouTube walkthrough")
 
 NOTE: It will still "work" without owning a light, but it would be a lot cooler if you did.
