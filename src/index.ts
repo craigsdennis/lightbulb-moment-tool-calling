@@ -11,27 +11,32 @@ type Env = {
 const app = new Hono<{ Bindings: Env }>();
 
 async function changeLightColor(env: Env, r: number, g: number, b: number) {
-	const request = {
-		device: env.GOVEE_DEVICE_ID,
-		model: env.GOVEE_MODEL_ID,
-		cmd: {
-			name: 'color',
-			value: {
-				r,
-				g,
-				b,
+	// I'm a little teapot
+	let statusCode = 418;
+	if (env.GOVEE_API_KEY !== undefined) {
+		const request = {
+			device: env.GOVEE_DEVICE_ID,
+			model: env.GOVEE_MODEL_ID,
+			cmd: {
+				name: 'color',
+				value: {
+					r,
+					g,
+					b,
+				},
 			},
-		},
-	};
-	const result = await fetch('https://developer-api.govee.com/v1/devices/control', {
-		headers: {
-			'Content-Type': 'application/json',
-			'Govee-API-Key': env.GOVEE_API_KEY,
-		},
-		method: 'PUT',
-		body: JSON.stringify(request),
-	});
-	return `Changed light color Red: ${r}, Green: ${g}, Blue: ${b}`;
+		};
+		const result = await fetch('https://developer-api.govee.com/v1/devices/control', {
+			headers: {
+				'Content-Type': 'application/json',
+				'Govee-API-Key': env.GOVEE_API_KEY,
+			},
+			method: 'PUT',
+			body: JSON.stringify(request),
+		});
+		statusCode = result.status;
+	}
+	return {message: `Changed light color Red: ${r}, Green: ${g}, Blue: ${b}`, color: {r, g, b}, statusCode};
 }
 
 app.post('/api/light', async (c) => {
@@ -43,12 +48,12 @@ app.post('/api/light', async (c) => {
 app.post('/chat', async (c) => {
 	const payload = await c.req.json();
 	const messages = payload.messages || [];
-	console.log({submittedMessages: messages});
+	console.log({ submittedMessages: messages });
 	messages.unshift({
-		role: "system",
+		role: 'system',
 		content: `You are a Home Automation assistant named Homie.
 
-		You will listen to the user's conversation and do your best to configure the home to match the conversation`
+		You will listen to the user's conversation and do your best to configure the home to match the conversation`,
 	});
 	const tools = [
 		{
@@ -95,19 +100,19 @@ app.post('/chat', async (c) => {
 					}
 					break;
 				default:
-					messages.push({role: "tool", name: tool_call.name, content: `Tool not found: ${tool_call.name}`});
+					messages.push({ role: 'tool', name: tool_call.name, content: `Tool not found: ${tool_call.name}` });
 					break;
 			}
 		}
 	}
 	const finalMessage = messages[messages.length - 1];
-	console.log({finalMessage});
-	if (finalMessage.role !== "assistant") {
-		messages.push({role: "assistant", content: result.response});
+	console.log({ finalMessage });
+	if (finalMessage.role !== 'assistant') {
+		messages.push({ role: 'assistant', content: result.response });
 	}
 	// Remove the system message
 	messages.splice(0, 1);
-	return c.json({messages});
+	return c.json({ messages });
 });
 
 export default app;

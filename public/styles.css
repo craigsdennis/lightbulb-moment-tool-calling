@@ -8,7 +8,7 @@ body {
 .chat-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 70vh;
     justify-content: space-between;
 }
 
@@ -101,4 +101,20 @@ body {
     align-self: center;
     background-color: #ff9800;
     color: #ffffff;
+}
+
+.lightbulb-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.lightbulb {
+    width: 100px;
+    height: 100px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px #ffffff;
 }

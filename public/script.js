@@ -4,16 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatMessages = document.getElementById('chat-messages');
     const clearButton = document.getElementById('clear-button');
     const debugCheckbox = document.getElementById('debug-checkbox');
+    const lightbulb = document.getElementById('lightbulb');
 
-	function getMessages() {
-		return JSON.parse(localStorage.getItem('messages')) || [];
-	}
+    function getMessages() {
+        return JSON.parse(localStorage.getItem('messages')) || [];
+    }
 
-	function setMessages(messages) {
-		localStorage.setItem('messages', JSON.stringify(messages));
-		return true
-	}
-	const messages = getMessages();
+    function setMessages(messages) {
+        localStorage.setItem('messages', JSON.stringify(messages));
+        return true;
+    }
+
+    const messages = getMessages();
     // Load messages from LocalStorage
     messages.forEach(appendUiMessage);
 
@@ -26,6 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearButton.addEventListener('click', clearMessages);
 
+    function setLightbulbColor(color) {
+        const { r, g, b } = color;
+        const rgbColor = `rgb(${r}, ${g}, ${b})`;
+        lightbulb.style.backgroundColor = rgbColor;
+        lightbulb.style.boxShadow = `0 0 20px ${rgbColor}`;
+    }
+
     function sendMessage() {
         const messageText = messageInput.value.trim();
         if (messageText) {
@@ -33,10 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 role: 'user',
                 content: messageText
             };
-			const messages = getMessages();
+            const messages = getMessages();
             messages.push(message);
-			setMessages(messages);
-			appendUiMessage(message);
+            setMessages(messages);
+            appendUiMessage(message);
             messageInput.value = '';
 
             // Send message to server
@@ -49,14 +58,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }).then(response => response.json())
               .then(data => {
                   // Update local messages array with response from server
-				  const messages = data.messages;
-				  console.log({messages});
-				  setMessages(messages);
+                  const messages = data.messages;
+                  setMessages(messages);
                   // Clear current messages
                   chatMessages.innerHTML = '';
                   // Append all messages
                   messages.forEach(msg => {
                       appendUiMessage(msg);
+                      if (msg.role === 'tool' && msg.name === 'switchLightColor') {
+                          const content = JSON.parse(msg.content);
+                          setLightbulbColor(content.color);
+                      }
                   });
               })
               .catch(error => {
@@ -84,6 +96,5 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearMessages() {
         localStorage.removeItem('messages');
         chatMessages.innerHTML = '';
-        messages.length = 0;  // Clear the messages array
     }
 });
