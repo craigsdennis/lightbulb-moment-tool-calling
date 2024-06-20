@@ -8,6 +8,8 @@ It adds the ability to control a [Govee](https://us.govee.com/) light device thr
 
 NOTE: It will still "work" without owning a light, but it would be a lot cooler if you did.
 
+📚 [Function Calling Documentation](https://developers.cloudflare.com/workers-ai/configuration/function-calling/)
+
 ## Installation
 
 If you have a light:
